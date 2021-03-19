@@ -1,8 +1,7 @@
 from django.http import JsonResponse
 from django.templatetags.static import static
-
-
-from .models import Product
+import json
+from .models import Product, Order, OrderItem
 
 
 def banners_list_api(request):
@@ -31,7 +30,6 @@ def banners_list_api(request):
 
 def product_list_api(request):
     products = Product.objects.select_related('category').available()
-
     dumped_products = []
     for product in products:
         dumped_product = {
@@ -57,6 +55,32 @@ def product_list_api(request):
     })
 
 
+def add_one():
+    largest = Order.objects.all().order_by('order_number').last()
+    if not largest:
+        return 1
+    return largest.order_number + 1
+
+
 def register_order(request):
-    # TODO это лишь заглушка
+    order_json = json.loads(request.body.decode())
+
+    if len(order_json['products']) < 1:
+        return JsonResponse({})
+
+    number = add_one()
+
+    order = Order.objects.create(order_number=number,
+                  address=order_json['address'],
+                  firstname=order_json['firstname'],
+                  lastname=order_json['lastname'],
+                  phone_number=order_json['phonenumber'])
+
+    for ordered in order_json['products']:
+        product = Product.objects.get(id=ordered['product'])
+        OrderItem.objects.create(
+            product=product,
+            quantity=ordered['quantity'],
+            order=order)
+
     return JsonResponse({})

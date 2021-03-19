@@ -1,11 +1,12 @@
 from django.db import models
-from django.core.validators import MinValueValidator
+from django.core.validators import MinValueValidator, MaxValueValidator
+from phonenumber_field.modelfields import PhoneNumberField
 
 
 class Restaurant(models.Model):
     name = models.CharField('название', max_length=50)
     address = models.CharField('адрес', max_length=100, blank=True)
-    contact_phone = models.CharField('контактный телефон', max_length=50, blank=True)
+    contact_phone = PhoneNumberField('контактный телефон', blank=True)
 
     def __str__(self):
         return self.name
@@ -33,12 +34,16 @@ class ProductCategory(models.Model):
 
 class Product(models.Model):
     name = models.CharField('название', max_length=50)
-    category = models.ForeignKey(ProductCategory, null=True, blank=True, on_delete=models.SET_NULL,
-                                 verbose_name='категория', related_name='products')
-    price = models.DecimalField('цена', max_digits=8, decimal_places=2, validators=[MinValueValidator(0)])
+    category = models.ForeignKey(ProductCategory, null=True, blank=True,
+                                 on_delete=models.SET_NULL,
+                                 verbose_name='категория',
+                                 related_name='products')
+    price = models.DecimalField('цена', max_digits=8, decimal_places=2,
+                                validators=[MinValueValidator(0)])
     image = models.ImageField('картинка')
-    special_status = models.BooleanField('спец.предложение', default=False, db_index=True)
-    description = models.TextField('описание', max_length=200, blank=True)
+    special_status = models.BooleanField('спец.предложение', default=False,
+                                         db_index=True)
+    description = models.TextField('описание', max_length=1000, blank=True)
 
     objects = ProductQuerySet.as_manager()
 
@@ -51,9 +56,11 @@ class Product(models.Model):
 
 
 class RestaurantMenuItem(models.Model):
-    restaurant = models.ForeignKey(Restaurant, on_delete=models.CASCADE, related_name='menu_items',
+    restaurant = models.ForeignKey(Restaurant, on_delete=models.CASCADE,
+                                   related_name='menu_items',
                                    verbose_name="ресторан")
-    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='menu_items',
+    product = models.ForeignKey(Product, on_delete=models.CASCADE,
+                                related_name='menu_items',
                                 verbose_name='продукт')
     availability = models.BooleanField('в продаже', default=True, db_index=True)
 
@@ -66,3 +73,38 @@ class RestaurantMenuItem(models.Model):
         unique_together = [
             ['restaurant', 'product']
         ]
+
+
+class Order(models.Model):
+    order_number = models.PositiveIntegerField(default=0, db_index=True)
+    address = models.CharField('адрес', max_length=500)
+    firstname = models.CharField('имя', max_length=255)
+    lastname = models.CharField('фамилия', max_length=255, blank=True)
+    phone_number = PhoneNumberField('мобильный номер', db_index=True)
+
+    def __str__(self):
+        return f'Заказ {self.order_number} {self.firstname} ' \
+               f'{self.address} {self.phone_number}'
+
+    class Meta:
+        verbose_name = 'заказ'
+        verbose_name_plural = 'заказы'
+
+
+class OrderItem(models.Model):
+    order = models.ForeignKey(Order, on_delete=models.CASCADE,
+                              related_name='order_items',
+                              verbose_name='Заказ')
+    product = models.ForeignKey(Product, on_delete=models.CASCADE,
+                                related_name='order_products',
+                                verbose_name='продукт')
+    quantity = models.IntegerField(validators=[MinValueValidator(0),
+                                               MaxValueValidator(500)],
+                                   verbose_name='количество')
+
+    def __str__(self):
+        return f'{self.product} {self.quantity}'
+
+    class Meta:
+        verbose_name = 'элемент заказа'
+        verbose_name_plural = 'элементы заказа'
