@@ -1,6 +1,8 @@
 from django.http import JsonResponse
 from django.templatetags.static import static
 import json
+from rest_framework.response import Response
+from rest_framework.decorators import api_view
 from .models import Product, Order, OrderItem
 
 
@@ -62,25 +64,23 @@ def add_one():
     return largest.order_number + 1
 
 
+@api_view(['POST'])
 def register_order(request):
-    order_json = json.loads(request.body.decode())
+    order_json = request.data
 
-    if len(order_json['products']) < 1:
-        return JsonResponse({})
+    if len(order_json) < 1:
+        return Response({})
 
     number = add_one()
-
     order = Order.objects.create(order_number=number,
-                  address=order_json['address'],
-                  firstname=order_json['firstname'],
-                  lastname=order_json['lastname'],
-                  phone_number=order_json['phonenumber'])
+                                 address=order_json['address'],
+                                 firstname=order_json['firstname'],
+                                 lastname=order_json['lastname'],
+                                 phone_number=order_json['phonenumber'])
 
     for ordered in order_json['products']:
         product = Product.objects.get(id=ordered['product'])
-        OrderItem.objects.create(
-            product=product,
-            quantity=ordered['quantity'],
-            order=order)
-
-    return JsonResponse({})
+        OrderItem.objects.create(product=product,
+                                 quantity=ordered['quantity'],
+                                 order=order)
+    return Response({})
