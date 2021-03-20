@@ -4,7 +4,6 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from .models import Product, Order, OrderItem
-import json
 
 
 def banners_list_api(request):
@@ -69,12 +68,14 @@ def verify_order(in_data):
     empty_request = Response({"error": "empty_request"},
                              status=status.HTTP_204_NO_CONTENT)
     bad_key = Response({"error": "product key not presented or not list"},
-                       status=status.HTTP_206_PARTIAL_CONTENT)
+                       status=status.HTTP_422_UNPROCESSABLE_ENTITY)
     out_data = ""
     if len(in_data) < 1:
         out_data = empty_request
     try:
         assert len(in_data["products"][0]) > 1
+        assert len(in_data["firstname"]) > 1
+        assert len(in_data["phonenumber"]) > 1
     except KeyError:
         out_data = bad_key
     except AssertionError:
