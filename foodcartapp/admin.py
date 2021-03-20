@@ -123,10 +123,6 @@ class OrderAdmin(admin.ModelAdmin):
     inlines = [
         OrderItemInline
     ]
-    # list_display = [
-    #     'order_number',
-    #     'firstname',
-    # ]
     search_fields = [
         'phone_number',
     ]
