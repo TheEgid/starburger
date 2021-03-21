@@ -74,19 +74,19 @@ def register_order(request):
     except ValidationError:
         return Response({"error": "product key not presented or not list"},
                         status=status.HTTP_422_UNPROCESSABLE_ENTITY)
-    serialized = request.data
+    new_order = request.data
 
     number = add_one()
     order = Order.objects.create(order_number=number,
-                                 address=serialized['address'],
-                                 firstname=serialized['firstname'],
-                                 lastname=serialized['lastname'],
-                                 phonenumber=serialized['phonenumber'])
+                                 address=new_order['address'],
+                                 firstname=new_order['firstname'],
+                                 lastname=new_order['lastname'],
+                                 phonenumber=new_order['phonenumber'])
 
-    for ordered in serialized['products']:
-        product = Product.objects.get(id=ordered['product'])
+    for new_order_item in new_order['products']:
+        product = Product.objects.get(id=new_order_item['product'])
         OrderItem.objects.create(product=product,
-                                 quantity=ordered['quantity'],
+                                 quantity=new_order_item['quantity'],
                                  order=order)
 
     return Response({}, status=status.HTTP_201_CREATED)
