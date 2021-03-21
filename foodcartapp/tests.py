@@ -19,8 +19,8 @@ class ApiTestCase(TestCase):
          "phonenumber": "3",
          "address": "4"},
         # // Продукты — пустой список:
-        {"products": [], "firstname": "1", "lastname": "2", "phonenumber": "3",
-         "address": "4"},
+        {"products": [], "firstname": "some", "lastname": "some",
+         "phonenumber": "+7 967 466 2380", "address": "Дом на Курской площади"},
         # // Продуктов нет:
         {"firstname": "1", "lastname": "2", "phonenumber": "3", "address": "4"}
     ]
@@ -74,4 +74,6 @@ class ApiTestCase(TestCase):
                                     json.dumps(test_product_data),
                                     content_type="application/json")
         assert response.status_code == status.HTTP_201_CREATED
-        assert b'product key not presented' not in response.content
+        assert 'address' in response.json().keys()
+        assert '+79123456789' in response.json().values()
+        assert test_product_data['firstname'] in response.json().values()

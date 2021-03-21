@@ -4,7 +4,7 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from .models import Product, Order, OrderItem
-from .serializers import OrderSerializer
+from .serializers import OrderSerializer, ProductSerializer
 from rest_framework.serializers import ValidationError
 
 
@@ -59,35 +59,27 @@ def product_list_api(request):
     })
 
 
-def add_one():
-    largest = Order.objects.all().order_by('order_number').last()
-    if not largest:
-        return 1
-    return largest.order_number + 1
-
-
 @api_view(['POST'])
 def register_order(request):
     try:
         serializer = OrderSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
+        new_order = serializer.validated_data
+        if not new_order['products']:
+            raise ValidationError
     except ValidationError:
         return Response({"error": "product key not presented or not list"},
                         status=status.HTTP_422_UNPROCESSABLE_ENTITY)
-    new_order = request.data
 
-    number = add_one()
-    order = Order.objects.create(order_number=number,
-                                 address=new_order['address'],
+    order = Order.objects.create(address=new_order['address'],
                                  firstname=new_order['firstname'],
                                  lastname=new_order['lastname'],
                                  phonenumber=new_order['phonenumber'])
-
     for new_order_item in new_order['products']:
-        product = Product.objects.get(id=new_order_item['product'])
-        OrderItem.objects.create(product=product,
+        OrderItem.objects.create(product=new_order_item['product'],
                                  quantity=new_order_item['quantity'],
                                  order=order)
 
-    breakpoint()
-    return Response(new_order, status=status.HTTP_201_CREATED)
+    serializer_order = OrderSerializer(order)
+    return Response(serializer_order.data,
+                    status=status.HTTP_201_CREATED)
