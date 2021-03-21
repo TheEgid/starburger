@@ -47,18 +47,28 @@ class ApiTestCase(TestCase):
          "lastname": "2", "phonenumber": "3", "address": "4"}
     ]
 
-    def test_product_api1(self):
-        for test_product_data in self.test_ordering_params1:
-            response = self.client.post('/api/order/',
-                                        json.dumps(test_product_data),
-                                        content_type="application/json")
-            assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
-            assert b'product key not presented' in response.content
+    test_ordering_params3 = [{"products": [{"product": 1, "quantity": "1"}], "firstname": "Димон", "lastname": "Димонов", "phonenumber": "+7 967 4782385", "address": "Дом на Курской площади"}]
 
-    def test_product_api2(self):
-        for test_product_data in self.test_ordering_params2:
+    # def test_product_api1(self):
+    #     for test_product_data in self.test_ordering_params1:
+    #         response = self.client.post('/api/order/',
+    #                                     json.dumps(test_product_data),
+    #                                     content_type="application/json")
+    #         assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+    #         assert b'product key not presented' in response.content
+    #
+    # def test_product_api2(self):
+    #     for test_product_data in self.test_ordering_params2:
+    #         response = self.client.post('/api/order/',
+    #                                     json.dumps(test_product_data),
+    #                                     content_type="application/json")
+    #         assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+    #         assert b'product key not presented' in response.content
+
+    def test_product_api3(self):
+        for test_product_data in self.test_ordering_params3:
             response = self.client.post('/api/order/',
-                                        json.dumps(test_product_data),
+                                        test_product_data,
                                         content_type="application/json")
-            assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
-            assert b'product key not presented' in response.content
+            assert response.status_code == status.HTTP_200_OK
+            #assert b'product key not presented' in response.content

@@ -4,6 +4,8 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from .models import Product, Order, OrderItem
+from .serializers import OrderSerializer
+from rest_framework.serializers import ValidationError
 
 
 def banners_list_api(request):
@@ -64,44 +66,24 @@ def add_one():
     return largest.order_number + 1
 
 
-def verify_order(in_data):
-    empty_request = Response({"error": "empty_request"},
-                             status=status.HTTP_204_NO_CONTENT)
-    bad_key = Response({"error": "product key not presented or not list"},
-                       status=status.HTTP_422_UNPROCESSABLE_ENTITY)
-    out_data = ""
-    if len(in_data) < 1:
-        out_data = empty_request
-    try:
-        assert len(in_data["products"][0]) > 1
-        assert len(in_data["firstname"]) > 1
-        assert len(in_data["phonenumber"]) > 1
-    except KeyError:
-        out_data = bad_key
-    except AssertionError:
-        out_data = bad_key
-    except IndexError:
-        out_data = bad_key
-    except TypeError:
-        out_data = bad_key
-    return out_data
-
-
 @api_view(['POST'])
 def register_order(request):
-    order_json = request.data
-    response = verify_order(order_json)
-    if response:
-        return response
+    try:
+        serializer = OrderSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+    except ValidationError:
+        return Response({"error": "product key not presented or not list"},
+                        status=status.HTTP_422_UNPROCESSABLE_ENTITY)
+    serialized = request.data
 
     number = add_one()
     order = Order.objects.create(order_number=number,
-                                 address=order_json['address'],
-                                 firstname=order_json['firstname'],
-                                 lastname=order_json['lastname'],
-                                 phone_number=order_json['phonenumber'])
+                                 address=serialized['address'],
+                                 firstname=serialized['firstname'],
+                                 lastname=serialized['lastname'],
+                                 phonenumber=serialized['phonenumber'])
 
-    for ordered in order_json['products']:
+    for ordered in serialized['products']:
         product = Product.objects.get(id=ordered['product'])
         OrderItem.objects.create(product=product,
                                  quantity=ordered['quantity'],

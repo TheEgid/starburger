@@ -124,7 +124,7 @@ class OrderAdmin(admin.ModelAdmin):
         OrderItemInline
     ]
     search_fields = [
-        'phone_number',
+        'phonenumber',
     ]
     readonly_fields = [
         'order_number'

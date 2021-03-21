@@ -80,11 +80,11 @@ class Order(models.Model):
     address = models.CharField('адрес', max_length=500)
     firstname = models.CharField('имя', max_length=255)
     lastname = models.CharField('фамилия', max_length=255, blank=True)
-    phone_number = PhoneNumberField('мобильный номер', db_index=True)
+    phonenumber = PhoneNumberField('мобильный номер', db_index=True)
 
     def __str__(self):
         return f'Заказ {self.order_number} {self.firstname} ' \
-               f'{self.address} {self.phone_number}'
+               f'{self.address} {self.phonenumber}'
 
     class Meta:
         verbose_name = 'заказ'
