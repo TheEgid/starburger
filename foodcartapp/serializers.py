@@ -13,12 +13,14 @@ class OrderItemSerializer(ModelSerializer):
     class Meta:
         product = ProductItemSerializer(many=True)
         model = OrderItem
-        fields = ['product', 'quantity']
+        fields = ['id', 'product', 'quantity']
 
 
 class OrderSerializer(ModelSerializer):
     products = OrderItemSerializer(many=True)
     phonenumber = PhoneNumberField()
     class Meta:
+        write_only = ['products']
         model = Order
-        fields = ['firstname', 'lastname', 'products', 'address', 'phonenumber']
+        fields = ['id', 'firstname', 'lastname',
+                  'products', 'address', 'phonenumber']

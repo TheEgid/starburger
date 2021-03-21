@@ -89,4 +89,5 @@ def register_order(request):
                                  quantity=new_order_item['quantity'],
                                  order=order)
 
-    return Response({}, status=status.HTTP_201_CREATED)
+    breakpoint()
+    return Response(new_order, status=status.HTTP_201_CREATED)
