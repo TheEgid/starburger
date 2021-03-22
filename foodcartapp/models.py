@@ -1,6 +1,9 @@
 from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
 from phonenumber_field.modelfields import PhoneNumberField
+from django.db.models import DecimalField, F, Sum, ExpressionWrapper, CharField, \
+    Value
+from django.db.models.functions import Concat
 
 
 class Restaurant(models.Model):
@@ -76,22 +79,38 @@ class RestaurantMenuItem(models.Model):
 
 
 class Order(models.Model):
-    order_number = models.PositiveIntegerField(default=0, db_index=True)
     address = models.CharField('адрес', max_length=500)
     firstname = models.CharField('имя', max_length=255)
     lastname = models.CharField('фамилия', max_length=255, blank=True)
     phonenumber = PhoneNumberField('мобильный номер', db_index=True)
 
     def __str__(self):
-        return f'Заказ {self.order_number} {self.firstname} ' \
-               f'{self.address} {self.phonenumber}'
+        return f'Заказ {self.firstname} {self.address} {self.phonenumber}'
 
     class Meta:
         verbose_name = 'заказ'
         verbose_name_plural = 'заказы'
 
 
+class OrderItemQuerySet(models.QuerySet):
+
+    def add_order_sum(self):
+        return self.annotate(sum_total=ExpressionWrapper(Sum('product__price') *
+                                                         F('quantity'),
+                                                         output_field=
+                                                         DecimalField()))
+
+    def add_order_fields(self):
+        return self.annotate(address=F('order__address')). \
+            annotate(phonenumber=F('order__phonenumber')). \
+            annotate(name=Concat(F('order__firstname'), Value(' '),
+                                 F('order__lastname'),
+                                 output_field=CharField()))
+
+
 class OrderItem(models.Model):
+    objects = OrderItemQuerySet.as_manager()
+
     order = models.ForeignKey(Order, on_delete=models.CASCADE,
                               related_name='order_items',
                               verbose_name='Заказ')

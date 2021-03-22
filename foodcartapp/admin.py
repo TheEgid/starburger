@@ -126,9 +126,6 @@ class OrderAdmin(admin.ModelAdmin):
     search_fields = [
         'phonenumber',
     ]
-    readonly_fields = [
-        'order_number'
-    ]
 
 
 @admin.register(OrderItem)
