@@ -23,7 +23,7 @@
     {% for item in order_items %}
       <tr>
         <td>{{ item.id }}</td>
-        <td>{{ item.sum_total | floatformat:2}} руб. </td>
+        <td>{{ item.total_sum | floatformat:2}} руб. </td>
         <td>{{ item.name }}</td>
         <td>{{ item.phonenumber }}</td>
         <td>{{ item.address }}</td>

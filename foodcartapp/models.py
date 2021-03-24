@@ -1,7 +1,7 @@
 from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
 from phonenumber_field.modelfields import PhoneNumberField
-from django.db.models import DecimalField, F, Sum, ExpressionWrapper, CharField, \
+from django.db.models import DecimalField, F, ExpressionWrapper, CharField, \
     Value
 from django.db.models.functions import Concat
 
@@ -78,7 +78,24 @@ class RestaurantMenuItem(models.Model):
         ]
 
 
+class OrderQuerySet(models.QuerySet):
+
+    def add_name(self):
+        return self.annotate(name=Concat(F('firstname'),
+                                         Value(' '),
+                                         F('lastname'),
+                                         output_field=CharField()))
+
+    def add_summ(self):
+        return self.annotate(order_sum=ExpressionWrapper(
+            F('order_items__product__price') * F('order_items__quantity'),
+            output_field=
+            DecimalField()))
+
+
 class Order(models.Model):
+    objects = OrderQuerySet.as_manager()
+
     address = models.CharField('адрес', max_length=500)
     firstname = models.CharField('имя', max_length=255)
     lastname = models.CharField('фамилия', max_length=255, blank=True)
@@ -92,25 +109,7 @@ class Order(models.Model):
         verbose_name_plural = 'заказы'
 
 
-class OrderItemQuerySet(models.QuerySet):
-
-    def add_order_sum(self):
-        return self.annotate(sum_total=ExpressionWrapper(Sum('product__price') *
-                                                         F('quantity'),
-                                                         output_field=
-                                                         DecimalField()))
-
-    def add_order_fields(self):
-        return self.annotate(address=F('order__address')). \
-            annotate(phonenumber=F('order__phonenumber')). \
-            annotate(name=Concat(F('order__firstname'), Value(' '),
-                                 F('order__lastname'),
-                                 output_field=CharField()))
-
-
 class OrderItem(models.Model):
-    objects = OrderItemQuerySet.as_manager()
-
     order = models.ForeignKey(Order, on_delete=models.CASCADE,
                               related_name='order_items',
                               verbose_name='Заказ')
