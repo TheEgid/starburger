@@ -64,12 +64,13 @@ class ApiTestCase(TestCase):
             assert b'product key not presented' in response.content
 
     def test_positive_create_product(self):
-        test_product_data = {"products": [{"product": 1, "quantity": 1}],
+        test_product_data = {"products": [{"product": 1, "quantity": 2}],
                              "firstname": "Василий", "lastname": "Васильевич",
                              "phonenumber": "+7 912 3456789",
                              "address": "Лондон"}
         category = ProductCategory.objects.create(name="new_category")
-        Product.objects.create(name="new_product", category=category, price=100)
+        Product.objects.create(name="new_product", category=category,
+                               price=500.75)
         response = self.client.post('/api/order/',
                                     json.dumps(test_product_data),
                                     content_type="application/json")

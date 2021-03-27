@@ -1,8 +1,8 @@
 from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
 from phonenumber_field.modelfields import PhoneNumberField
-from django.db.models import DecimalField, F, ExpressionWrapper, CharField, \
-    Value
+from django.db.models import DecimalField, F, ExpressionWrapper, CharField
+from django.db.models import Value
 from django.db.models.functions import Concat
 
 
@@ -81,16 +81,19 @@ class RestaurantMenuItem(models.Model):
 class OrderQuerySet(models.QuerySet):
 
     def add_name(self):
-        return self.annotate(name=Concat(F('firstname'),
-                                         Value(' '),
-                                         F('lastname'),
-                                         output_field=CharField()))
+        return self.annotate(
+            name=Concat(
+                F('firstname'), Value(' '), F('lastname'),
+                output_field=CharField()))
 
-    def add_summ(self):
-        return self.annotate(order_sum=ExpressionWrapper(
-            F('order_items__product__price') * F('order_items__quantity'),
-            output_field=
-            DecimalField()))
+    def add_sum_current_prices(self):
+        return self.annotate(
+            sum_current_prices=ExpressionWrapper(
+                F('order_items__product__price') * F('order_items__quantity'),
+                output_field=DecimalField()))
+
+    def add_sum_order_prices(self):
+        return self.annotate(sum_order_prices=F('order_items__value'))
 
 
 class Order(models.Model):
@@ -116,9 +119,13 @@ class OrderItem(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE,
                                 related_name='order_products',
                                 verbose_name='продукт')
+
     quantity = models.IntegerField(validators=[MinValueValidator(0),
                                                MaxValueValidator(500)],
                                    verbose_name='количество')
+    value = models.DecimalField(decimal_places=2, default=0,
+                                verbose_name='стоимость', max_digits=8,
+                                validators=[MinValueValidator(0)])
 
     def __str__(self):
         return f'{self.product} {self.quantity}'
@@ -126,3 +133,7 @@ class OrderItem(models.Model):
     class Meta:
         verbose_name = 'элемент заказа'
         verbose_name_plural = 'элементы заказа'
+
+    def save(self, *args, **kwargs):
+        self.value = self.product.price * self.quantity
+        super(OrderItem, self).save(*args, **kwargs)

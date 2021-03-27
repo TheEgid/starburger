@@ -111,6 +111,9 @@ class ProductAdmin(admin.ModelAdmin):
 class OrderItemInline(admin.TabularInline):
     model = OrderItem
     extra = 0
+    readonly_fields = [
+        'value',
+    ]
 
 
 class OrderInline(admin.TabularInline):
@@ -130,5 +133,9 @@ class OrderAdmin(admin.ModelAdmin):
 
 @admin.register(OrderItem)
 class OrderItem(admin.ModelAdmin):
-    pass
+
+    readonly_fields = [
+        'value',
+    ]
+
 
