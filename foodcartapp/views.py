@@ -1,4 +1,5 @@
 from django.http import JsonResponse
+from django.db import transaction
 from django.templatetags.static import static
 from rest_framework import status
 from rest_framework.response import Response
@@ -70,16 +71,17 @@ def register_order(request):
     except ValidationError:
         return Response({"error": "product key not presented or not list"},
                         status=status.HTTP_422_UNPROCESSABLE_ENTITY)
+    with transaction.atomic():
+        order = Order.objects.create(address=new_order['address'],
+                                     firstname=new_order['firstname'],
+                                     lastname=new_order['lastname'],
+                                     phonenumber=new_order['phonenumber'])
+        for new_order_item in new_order['products']:
+            OrderItem.objects.create(product=new_order_item['product'],
+                                     quantity=new_order_item['quantity'],
+                                     order=order)
 
-    order = Order.objects.create(address=new_order['address'],
-                                 firstname=new_order['firstname'],
-                                 lastname=new_order['lastname'],
-                                 phonenumber=new_order['phonenumber'])
-    for new_order_item in new_order['products']:
-        OrderItem.objects.create(product=new_order_item['product'],
-                                 quantity=new_order_item['quantity'],
-                                 order=order)
+        serializer_order = OrderSerializer(order)
 
-    serializer_order = OrderSerializer(order)
     return Response(serializer_order.data,
                     status=status.HTTP_201_CREATED)
