@@ -14,6 +14,7 @@
    <table class="table table-responsive">
     <tr>
       <th>ID</th>
+      <th>Статус</th>
       <th>Стоимость (текущие цены)</th>
       <th>Стоимость (момент заказа)</th>
       <th>Клиент</th>
@@ -25,6 +26,7 @@
     {% for item in order_items %}
       <tr>
         <td>{{ item.id }}</td>
+        <td>{{ item.get_status_display }}</td>
         <td>{{ item.total_sum_current_prices | floatformat:2}} руб. </td>
         <td>{{ item.total_sum_order_prices | floatformat:2}} руб. </td>
         <td>{{ item.name }}</td>

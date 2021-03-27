@@ -5,7 +5,7 @@ from django.urls import reverse_lazy
 from django.contrib.auth.decorators import user_passes_test
 from django.contrib.auth import authenticate, login
 from django.contrib.auth import views as auth_views
-from django.db.models import Sum
+from django.db.models import Sum, F, ExpressionWrapper, CharField
 from foodcartapp.models import Product, Restaurant, Order, OrderItem
 
 
@@ -98,11 +98,9 @@ def view_restaurants(request):
 def view_orders(request):
     _order_items = Order.objects.prefetch_related('order_items'). \
         add_name().add_sum_current_prices().add_sum_order_prices()
-
-    order_items = _order_items.values('id', 'name', 'address', 'phonenumber'). \
+    order_items = _order_items. \
         annotate(total_sum_current_prices=Sum('sum_current_prices')). \
-        annotate(total_sum_order_prices=Sum('sum_order_prices')). \
-        order_by('-id')
+        annotate(total_sum_order_prices=Sum('sum_order_prices')).order_by('-id')
 
     return render(request, template_name='order_items.html', context={
         'order_items': order_items,

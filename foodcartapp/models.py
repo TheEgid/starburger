@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils.translation import gettext_lazy as _
 from django.core.validators import MinValueValidator, MaxValueValidator
 from phonenumber_field.modelfields import PhoneNumberField
 from django.db.models import DecimalField, F, ExpressionWrapper, CharField
@@ -95,10 +96,28 @@ class OrderQuerySet(models.QuerySet):
     def add_sum_order_prices(self):
         return self.annotate(sum_order_prices=F('order_items__value'))
 
+    # def disp(self):
+    #     ddd = self.values_list('status')
+    #     for xx in ddd:
+    #         print(xx.get_status_display())
+    #     breakpoint()
+    #     return self.annotate(status2=ExpressionWrapper(F('_get_status_display'),
+    #                                                    output_field=CharField()))
+
 
 class Order(models.Model):
     objects = OrderQuerySet.as_manager()
 
+    class Statuses(models.TextChoices):
+        UNTREATED = 'UN', _('Необработанный')
+        CANCELED = 'CA', _('Отмененный')
+        ACCEPTED = 'AC', _('Принятый')
+        PRODUCED = 'PR', _('Приготовленный')
+        SHIPPED = 'SH', _('Отгруженный')
+        COMPLETED = 'CO', _('Выполненный')
+
+    status = models.CharField('статус', max_length=2, choices=Statuses.choices,
+                              default=Statuses.UNTREATED)
     address = models.CharField('адрес', max_length=500)
     firstname = models.CharField('имя', max_length=255)
     lastname = models.CharField('фамилия', max_length=255, blank=True)
