@@ -2,8 +2,8 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 from django.core.validators import MinValueValidator, MaxValueValidator
 from phonenumber_field.modelfields import PhoneNumberField
-from django.db.models import DecimalField, F, ExpressionWrapper, CharField
-from django.db.models import Value
+from django.db.models import DecimalField, CharField
+from django.db.models import Value, Sum, F, ExpressionWrapper
 from django.db.models.functions import Concat
 
 
@@ -87,14 +87,15 @@ class OrderQuerySet(models.QuerySet):
                 F('firstname'), Value(' '), F('lastname'),
                 output_field=CharField()))
 
+    def add_sum_order_prices(self):
+        return self.annotate(sum_order_prices=Sum('order_items__value'))
+
+    # preform for a possible additional field
     def add_sum_current_prices(self):
         return self.annotate(
             sum_current_prices=ExpressionWrapper(
                 F('order_items__product__price') * F('order_items__quantity'),
                 output_field=DecimalField()))
-
-    def add_sum_order_prices(self):
-        return self.annotate(sum_order_prices=F('order_items__value'))
 
 
 class Order(models.Model):

@@ -3,20 +3,19 @@
 {% block title %}Необработанные заказы | Star Burger{% endblock %}
 
 {% block content %}
-  <center>
-    <h2>Необработанные заказы</h2>
-  </center>
+<center>
+  <h2>Необработанные заказы</h2>
+</center>
 
-  <hr/>
-  <br/>
-  <br/>
-  <div class="container">
-   <table class="table table-responsive">
+<hr/>
+<br/>
+<br/>
+<div class="container">
+  <table class="table table-responsive">
     <tr>
       <th>ID</th>
       <th>Статус</th>
-      <th>Стоимость (момент заказа)</th>
-      <th>Стоимость (текущие цены)</th>
+      <th>Стоимость</th>
       <th>Клиент</th>
       <th>Телефон</th>
       <th>Адрес доставки</th>
@@ -25,18 +24,19 @@
     </tr>
 
     {% for order in orders %}
-      <tr>
-        <td>{{ order.id }}</td>
-        <td>{{ order.status }}</td>
-        <td>{{ order.total_sum_order_prices | floatformat:2}} руб. </td>
-        <td>{{ order.total_sum_current_prices | floatformat:2}} руб. </td>
-        <td>{{ order.name }}</td>
-        <td>{{ order.phonenumber }}</td>
-        <td>{{ order.address }}</td>
-        <td>{{ order.comment }}</td>
-        <td><a href="{% url 'admin:foodcartapp_order_change' order.id %}?next={{ request.get_full_path|urlencode }}">ред.</a></td>
-      </tr>
+    <tr>
+      <td>{{ order.id }}</td>
+      <td>{{ order.get_status_display }}</td>
+      <td>
+        <b>{{ order.sum_order_prices | floatformat:2}} руб.</b>
+      </td>
+      <td>{{ order.name }}</td>
+      <td>{{ order.phonenumber }}</td>
+      <td>{{ order.address }}</td>
+      <td>{{ order.comment }}</td>
+      <td><a href="{% url 'admin:foodcartapp_order_change' order.id %}?next={{ request.get_full_path|urlencode }}">ред.</a></td>
+    </tr>
     {% endfor %}
-   </table>
-  </div>
+  </table>
+</div>
 {% endblock %}
