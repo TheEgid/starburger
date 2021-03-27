@@ -96,14 +96,6 @@ class OrderQuerySet(models.QuerySet):
     def add_sum_order_prices(self):
         return self.annotate(sum_order_prices=F('order_items__value'))
 
-    # def disp(self):
-    #     ddd = self.values_list('status')
-    #     for xx in ddd:
-    #         print(xx.get_status_display())
-    #     breakpoint()
-    #     return self.annotate(status2=ExpressionWrapper(F('_get_status_display'),
-    #                                                    output_field=CharField()))
-
 
 class Order(models.Model):
     objects = OrderQuerySet.as_manager()
@@ -122,6 +114,8 @@ class Order(models.Model):
     firstname = models.CharField('имя', max_length=255)
     lastname = models.CharField('фамилия', max_length=255, blank=True)
     phonenumber = PhoneNumberField('мобильный номер', db_index=True)
+    comment = models.TextField("комментарий", blank=True,
+                               help_text='Необязательный комментарий к заказу')
 
     def __str__(self):
         return f'Заказ {self.firstname} {self.address} {self.phonenumber}'
