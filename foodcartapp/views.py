@@ -71,6 +71,7 @@ def register_order(request):
     except ValidationError:
         return Response({"error": "product key not presented or not list"},
                         status=status.HTTP_422_UNPROCESSABLE_ENTITY)
+
     with transaction.atomic():
         order = Order.objects.create(address=new_order['address'],
                                      firstname=new_order['firstname'],
