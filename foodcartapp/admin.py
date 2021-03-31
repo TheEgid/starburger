@@ -131,6 +131,9 @@ class OrderAdmin(admin.ModelAdmin):
     search_fields = [
         'phonenumber',
     ]
+    readonly_fields = [
+        'registrated_at',
+    ]
 
     def response_change(self, request, obj):
         res = super(OrderAdmin, self).response_change(request, obj)
@@ -143,7 +146,6 @@ class OrderAdmin(admin.ModelAdmin):
 
 @admin.register(OrderItem)
 class OrderItem(admin.ModelAdmin):
-
     readonly_fields = [
         'value',
     ]

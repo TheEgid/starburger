@@ -1,3 +1,4 @@
+from django.utils import timezone
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 from django.core.validators import MinValueValidator, MaxValueValidator
@@ -109,14 +110,29 @@ class Order(models.Model):
         SHIPPED = 'SH', _('Отгруженный')
         COMPLETED = 'CO', _('Выполненный')
 
+    class PaymentMethods(models.TextChoices):
+        NOCASH = 'NOCASH', _('Безналично')
+        CASH = 'CASH', _('Наличные')
+
     status = models.CharField('статус', max_length=2, choices=Statuses.choices,
                               default=Statuses.UNTREATED)
+    payment_method = models.CharField('способ оплаты', max_length=6,
+                                      choices=PaymentMethods.choices,
+                                      default=PaymentMethods.NOCASH)
     address = models.CharField('адрес', max_length=500)
     firstname = models.CharField('имя', max_length=255)
     lastname = models.CharField('фамилия', max_length=255, blank=True)
     phonenumber = PhoneNumberField('мобильный номер', db_index=True)
     comment = models.TextField("комментарий", blank=True,
                                help_text='Необязательный комментарий к заказу')
+    registrated_at = models.DateTimeField(
+        'Дата и время регистрации',
+        default=timezone.now, blank=True,
+        null=True)
+    called_at = models.DateTimeField('Дата и время созвона', blank=True,
+                                     null=True)
+    delivered_at = models.DateTimeField('Дата и время доставки',
+                                        blank=True, null=True)
 
     def __str__(self):
         return f'Заказ {self.firstname} {self.address} {self.phonenumber}'
