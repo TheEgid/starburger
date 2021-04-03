@@ -6,6 +6,7 @@ from django.contrib.auth.decorators import user_passes_test
 from django.contrib.auth import authenticate, login
 from django.contrib.auth import views as auth_views
 from foodcartapp.models import Product, Restaurant, Order, OrderItem
+from foodcartapp.models import RestaurantMenuItem, get_available_restaurants
 
 
 class Login(forms.Form):
@@ -95,20 +96,28 @@ def view_restaurants(request):
 
 @user_passes_test(is_manager, login_url='restaurateur:login')
 def view_orders(request):
-    orders = Order.objects. \
-        add_name().add_sum_order_prices().order_by('-id')
+
+    restaurants_menus = RestaurantMenuItem.objects.add_available_rest_name()
+
+    orders = Order.objects.add_ordered_prices_sum().add_sum_current_prices(). \
+        add_name().order_by('-id')
+
+    dumped_orders = []
+    for order in orders:
+        restaurants = get_available_restaurants(restaurants_menus, order)
+        dumped_orders.append({
+            'id': order.id,
+            'status': order.get_status_display,
+            'payment_method': order.get_payment_method_display,
+            'sum_order_prices': order.sum_order_prices,
+            'sum_current_prices': order.sum_current_prices,
+            'name': order.name,
+            'phonenumber': order.phonenumber,
+            'address': order.address,
+            'comment': order.comment,
+            'restaurants': restaurants
+        })
+
     return render(request, template_name='order_items.html', context={
-        'orders': orders,
+        'orders': dumped_orders,
     })
-
-
-# < details
-# open >
-# < summary >
-# < b > Стоимость < / b >
-# < / summary >
-# < b > < small > < small > Стоимость
-# в
-# текущих
-# ценах < / small > < / small > < / b >
-# < / details >

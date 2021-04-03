@@ -13,29 +13,38 @@
 <div class="container">
   <table class="table table-responsive">
     <tr>
-      <th>ID</th>
-      <th>Статус</th>
-      <th>Способ оплаты</th>
-      <th>Стоимость</th>
-      <th>Клиент</th>
-      <th>Телефон</th>
-      <th>Адрес доставки</th>
-      <th>Комментарий</th>
-      <th>Админка</th>
+      <th><small>ID</small></th>
+      <th><small>Статус</small></th>
+      <th><small>Способ оплаты</small></th>
+      <th><small>Стоимость (текущие цены)</small></th>
+      <th><small>Стоимость (момент заказа)</small></th>
+      <th><small>Клиент</small></th>
+      <th><small>Телефон</small></th>
+      <th><small>Адрес доставки</small></th>
+      <th><small>Комментарий</small></th>
+      <th><small>Рестораны</small></th>
+      <th><small>Админка</small></th>
     </tr>
 
     {% for order in orders %}
     <tr>
       <td>{{ order.id }}</td>
-      <td>{{ order.get_status_display }}</td>
-      <td>{{ order.get_payment_method_display }}</td>
-      <td>
-        <b>{{ order.sum_order_prices | floatformat:2}} руб.</b>
-      </td>
+      <td>{{ order.status }}</td>
+      <td>{{ order.payment_method }}</td>
+      <td>{{ order.sum_current_prices | floatformat:2}} руб. </td>
+      <td>{{ order.sum_order_prices | floatformat:2}} руб. </td>
       <td>{{ order.name }}</td>
       <td>{{ order.phonenumber }}</td>
       <td>{{ order.address }}</td>
       <td>{{ order.comment }}</td>
+      <td>
+        <details>
+          <summary><small>Развернуть</small></summary>
+          {% for restaurant in order.restaurants %}
+          <p><small><b> {{ restaurant }} </b></small></p>
+          {% endfor %}
+        </details>
+      </td>
       <td><a href="{% url 'admin:foodcartapp_order_change' order.id %}?next={{ request.get_full_path|urlencode }}">ред.</a></td>
     </tr>
     {% endfor %}

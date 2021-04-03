@@ -1,3 +1,4 @@
+from itertools import groupby
 from django.utils import timezone
 from django.db import models
 from django.utils.translation import gettext_lazy as _
@@ -6,6 +7,30 @@ from phonenumber_field.modelfields import PhoneNumberField
 from django.db.models import DecimalField, CharField
 from django.db.models import Value, Sum, F, ExpressionWrapper
 from django.db.models.functions import Concat
+
+
+def get_available_restaurants(restaurants_menus, order):
+    global restaurants_for_order
+    rest_products = []
+    all_restaurants = []
+
+    [rest_products.append(
+        (restaurants_menu.rest_name,
+         restaurants_menu.product_id)
+    ) for restaurants_menu in restaurants_menus]
+
+    ordered_products_ids = [x.product.id for x in order.order_items.all()]
+    for ordered_products_id in ordered_products_ids:
+        for rest_product in rest_products:
+            _name, _id, = rest_product
+            if ordered_products_id == _id:
+                all_restaurants.append(_name)
+        all_restaurants.append(None)  # delimeter
+
+    restaurants_for_order = [set(group) for delim, group in groupby(
+        all_restaurants, lambda x: x is None) if not delim]
+
+    return set.intersection(*restaurants_for_order)
 
 
 class Restaurant(models.Model):
@@ -60,7 +85,17 @@ class Product(models.Model):
         verbose_name_plural = 'товары'
 
 
+class RestaurantMenuItemQuerySet(models.QuerySet):
+    def add_available_rest_name(self):
+        return self.filter(availability=True). \
+            annotate(rest_name=ExpressionWrapper(F('restaurant__name'),
+                                                 output_field=CharField()))
+
+
 class RestaurantMenuItem(models.Model):
+
+    objects = RestaurantMenuItemQuerySet.as_manager()
+
     restaurant = models.ForeignKey(Restaurant, on_delete=models.CASCADE,
                                    related_name='menu_items',
                                    verbose_name="ресторан")
@@ -84,19 +119,17 @@ class OrderQuerySet(models.QuerySet):
 
     def add_name(self):
         return self.annotate(
-            name=Concat(
-                F('firstname'), Value(' '), F('lastname'),
-                output_field=CharField()))
+            name=Concat(F('firstname'), Value(' '), F('lastname'),
+                        output_field=CharField()))
 
-    def add_sum_order_prices(self):
-        return self.annotate(sum_order_prices=Sum('order_items__value'))
+    def add_ordered_prices_sum(self):
+        return self.prefetch_related('order_items__product'). \
+            annotate(sum_order_prices=Sum('order_items__value'))
 
-    # preform for a possible additional field
     def add_sum_current_prices(self):
-        return self.annotate(
-            sum_current_prices=ExpressionWrapper(
-                F('order_items__product__price') * F('order_items__quantity'),
-                output_field=DecimalField()))
+        return self.annotate(sum_current_prices=Sum(
+            F('order_items__product__price') * F('order_items__quantity'),
+            output_field=DecimalField()))
 
 
 class Order(models.Model):
@@ -125,13 +158,12 @@ class Order(models.Model):
     phonenumber = PhoneNumberField('мобильный номер', db_index=True)
     comment = models.TextField("комментарий", blank=True,
                                help_text='Необязательный комментарий к заказу')
-    registrated_at = models.DateTimeField(
-        'Дата и время регистрации',
-        default=timezone.now, blank=True,
-        null=True)
-    called_at = models.DateTimeField('Дата и время созвона', blank=True,
+    registrated_at = models.DateTimeField('дата и время регистрации',
+                                          default=timezone.now, blank=True,
+                                          null=True)
+    called_at = models.DateTimeField('дата и время созвона', blank=True,
                                      null=True)
-    delivered_at = models.DateTimeField('Дата и время доставки',
+    delivered_at = models.DateTimeField('дата и время доставки',
                                         blank=True, null=True)
 
     def __str__(self):
