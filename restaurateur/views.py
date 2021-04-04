@@ -5,8 +5,9 @@ from django.urls import reverse_lazy
 from django.contrib.auth.decorators import user_passes_test
 from django.contrib.auth import authenticate, login
 from django.contrib.auth import views as auth_views
-from foodcartapp.models import Product, Restaurant, Order, OrderItem
-from foodcartapp.models import RestaurantMenuItem, get_available_restaurants
+from foodcartapp.models import Product, Restaurant, Order, OrderItem, \
+    RestaurantMenuItem
+from foodcartapp.utils import get_available_restaurants, get_distance
 
 
 class Login(forms.Form):
@@ -96,15 +97,18 @@ def view_restaurants(request):
 
 @user_passes_test(is_manager, login_url='restaurateur:login')
 def view_orders(request):
+    dumped_orders = []
 
-    restaurants_menus = RestaurantMenuItem.objects.add_available_rest_name()
+    restaurants_for_order = RestaurantMenuItem.objects.add_available_rests()
 
-    orders = Order.objects.add_ordered_prices_sum().add_sum_current_prices(). \
+    orders = Order.objects.add_sum_ordered_prices().add_sum_current_prices(). \
         add_name().order_by('-id')
 
-    dumped_orders = []
     for order in orders:
-        restaurants = get_available_restaurants(restaurants_menus, order)
+        restaurants = get_available_restaurants(restaurants_for_order, order)
+        _restaurants = set([get_distance(restaurant, order.address)
+                            for restaurant in restaurants])
+
         dumped_orders.append({
             'id': order.id,
             'status': order.get_status_display,
@@ -115,7 +119,7 @@ def view_orders(request):
             'phonenumber': order.phonenumber,
             'address': order.address,
             'comment': order.comment,
-            'restaurants': restaurants
+            'restaurants': _restaurants
         })
 
     return render(request, template_name='order_items.html', context={

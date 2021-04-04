@@ -7,3 +7,5 @@ djangorestframework==3.12.4
 django-phonenumber-field==5.0.0
 pytest-django==4.1.0
 phonenumbers==8.12.20
+requests==2.25.1
+geopy==2.1.0
