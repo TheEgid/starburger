@@ -8,8 +8,22 @@ from django.db.models import Value, Sum, F, ExpressionWrapper
 from django.db.models.functions import Concat
 
 
+class AddressPoint(models.Model):
+    address = models.CharField('адрес', max_length=500, db_index=True,
+                               unique=True)
+    latitude = models.DecimalField('широта',
+                                   max_digits=9, decimal_places=6, null=True,
+                                   blank=True)
+    longitude = models.DecimalField('долгота',
+                                    max_digits=9, decimal_places=6, null=True,
+                                    blank=True)
+    query_at = models.DateTimeField('дата и время регистрации',
+                                    default=timezone.now, blank=True,
+                                    null=True)
+
+
 class Restaurant(models.Model):
-    name = models.CharField('название', max_length=50)
+    name = models.CharField('название', max_length=50, db_index=True)
     address = models.CharField('адрес', max_length=100, blank=True)
     contact_phone = PhoneNumberField('контактный телефон', blank=True)
 
@@ -38,7 +52,7 @@ class ProductCategory(models.Model):
 
 
 class Product(models.Model):
-    name = models.CharField('название', max_length=50)
+    name = models.CharField('название', max_length=50, db_index=True)
     category = models.ForeignKey(ProductCategory, null=True, blank=True,
                                  on_delete=models.SET_NULL,
                                  verbose_name='категория',
@@ -66,10 +80,10 @@ class RestaurantMenuItemQuerySet(models.QuerySet):
             annotate(rest_name=ExpressionWrapper(F('restaurant__name'),
                                                  output_field=CharField())). \
             annotate(rest_address=ExpressionWrapper(F('restaurant__address'),
-                                                 output_field=CharField()))
+                                                    output_field=CharField()))
+
 
 class RestaurantMenuItem(models.Model):
-
     objects = RestaurantMenuItemQuerySet.as_manager()
 
     restaurant = models.ForeignKey(Restaurant, on_delete=models.CASCADE,

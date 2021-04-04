@@ -1,8 +1,10 @@
 import requests
+from functools import lru_cache
 from requests.exceptions import HTTPError
 from itertools import groupby
 from geopy import distance
 from django.conf import settings
+from foodcartapp.models import AddressPoint
 
 
 def fetch_coordinates(place):
@@ -21,19 +23,24 @@ def fetch_coordinates(place):
         return None
 
 
+@lru_cache
 def get_coordinates(place):
-
-    return fetch_coordinates(place)
+    try:
+        _address = AddressPoint.objects.filter(address=place).get()
+    except AddressPoint.DoesNotExist:
+        lat, lon = fetch_coordinates(place)
+        _address = AddressPoint.objects.create(address=place,
+                                               latitude=lat, longitude=lon)
+    return float(_address.latitude), float(_address.longitude)
 
 
 def get_distance(restaurant, order_address):
     restaurant_name, restaurant_address = restaurant.split('|%|')
 
-    if not isinstance(order_address, str) and not \
+    if not isinstance(order_address, str) or not \
         isinstance(restaurant_address, str):
         return restaurant_name
 
-    _distance = ''
     start = get_coordinates(restaurant_address)
     finish = get_coordinates(order_address)
     _distance = round(distance.distance(start, finish).km, 2)
@@ -57,7 +64,7 @@ def get_available_restaurants(restaurants_menus, order):
         for rest_product in rest_products:
             _name, _address, _id = rest_product
             if ordered_products_id == _id:
-                all_restaurants.append(f'{_name} |%| {_address}')
+                all_restaurants.append(f'{_name}|%|{_address}')
         all_restaurants.append(None)  # delimiter
     restaurants_for_order = [set(group) for delimiter, group in groupby(
         all_restaurants, lambda x: x is None) if not delimiter]

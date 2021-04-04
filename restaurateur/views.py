@@ -6,7 +6,7 @@ from django.contrib.auth.decorators import user_passes_test
 from django.contrib.auth import authenticate, login
 from django.contrib.auth import views as auth_views
 from foodcartapp.models import Product, Restaurant, Order, OrderItem, \
-    RestaurantMenuItem
+    RestaurantMenuItem, AddressPoint
 from foodcartapp.utils import get_available_restaurants, get_distance
 
 
@@ -105,9 +105,9 @@ def view_orders(request):
         add_name().order_by('-id')
 
     for order in orders:
-        restaurants = get_available_restaurants(restaurants_for_order, order)
-        _restaurants = set([get_distance(restaurant, order.address)
-                            for restaurant in restaurants])
+        _restaurants = get_available_restaurants(restaurants_for_order, order)
+        restaurants = [get_distance(restaurant, order.address)
+                       for restaurant in _restaurants]
 
         dumped_orders.append({
             'id': order.id,
@@ -119,7 +119,7 @@ def view_orders(request):
             'phonenumber': order.phonenumber,
             'address': order.address,
             'comment': order.comment,
-            'restaurants': _restaurants
+            'restaurants': restaurants
         })
 
     return render(request, template_name='order_items.html', context={
