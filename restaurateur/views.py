@@ -5,8 +5,7 @@ from django.urls import reverse_lazy
 from django.contrib.auth.decorators import user_passes_test
 from django.contrib.auth import authenticate, login
 from django.contrib.auth import views as auth_views
-from foodcartapp.models import Product, Restaurant, Order, OrderItem, \
-    RestaurantMenuItem, AddressPoint
+from foodcartapp.models import RestaurantMenuItem, Order,  Product, Restaurant
 from foodcartapp.utils import get_available_restaurants, get_distance
 
 
@@ -106,9 +105,9 @@ def view_orders(request):
 
     for order in orders:
         _restaurants = get_available_restaurants(restaurants_for_order, order)
-        restaurants = [get_distance(restaurant, order.address)
-                       for restaurant in _restaurants]
 
+        with_distance_restaurants = [get_distance(restaurant, order.address)
+                                     for restaurant in _restaurants]
         dumped_orders.append({
             'id': order.id,
             'status': order.get_status_display,
@@ -119,7 +118,7 @@ def view_orders(request):
             'phonenumber': order.phonenumber,
             'address': order.address,
             'comment': order.comment,
-            'restaurants': restaurants
+            'restaurants': with_distance_restaurants
         })
 
     return render(request, template_name='order_items.html', context={

@@ -36,9 +36,7 @@ def get_coordinates(place):
 
 def get_distance(restaurant, order_address):
     restaurant_name, restaurant_address = restaurant.split('|%|')
-
-    if not isinstance(order_address, str) or not \
-        isinstance(restaurant_address, str):
+    if not order_address or not restaurant_address:
         return restaurant_name
 
     start = get_coordinates(restaurant_address)
