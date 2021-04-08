@@ -77,11 +77,13 @@ def register_order(request):
                                      firstname=new_order['firstname'],
                                      lastname=new_order['lastname'],
                                      phonenumber=new_order['phonenumber'])
+
         for new_order_item in new_order['products']:
+            value = new_order_item['product'].price * new_order_item['quantity']
             OrderItem.objects.create(product=new_order_item['product'],
                                      quantity=new_order_item['quantity'],
+                                     value=value,
                                      order=order)
-
         serializer_order = OrderSerializer(order)
 
     return Response(serializer_order.data,

@@ -185,7 +185,3 @@ class OrderItem(models.Model):
     class Meta:
         verbose_name = 'элемент заказа'
         verbose_name_plural = 'элементы заказа'
-
-    def save(self, *args, **kwargs):
-        self.value = self.product.price * self.quantity
-        super(OrderItem, self).save(*args, **kwargs)
