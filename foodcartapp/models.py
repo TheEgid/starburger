@@ -17,9 +17,9 @@ class AddressPoint(models.Model):
     longitude = models.DecimalField('долгота',
                                     max_digits=9, decimal_places=6, null=True,
                                     blank=True)
-    query_at = models.DateTimeField('дата и время регистрации',
-                                    default=timezone.now, blank=True,
-                                    null=True)
+    registered_at = models.DateTimeField('дата и время регистрации',
+                                         default=timezone.now, blank=True,
+                                         null=True)
 
 
 class Restaurant(models.Model):

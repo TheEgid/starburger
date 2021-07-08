@@ -5,7 +5,6 @@ import django.utils.timezone
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ('foodcartapp', '0041_0040_orderitem_value'),
     ]
