@@ -1,5 +1,5 @@
 from phonenumber_field.serializerfields import PhoneNumberField
-from rest_framework.serializers import ModelSerializer, ListSerializer
+from rest_framework.serializers import ModelSerializer
 from .models import Product, Order, OrderItem
 
 

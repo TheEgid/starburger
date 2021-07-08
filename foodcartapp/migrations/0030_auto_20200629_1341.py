@@ -5,7 +5,6 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ('foodcartapp', '0029_remove_product_category'),
     ]
@@ -14,8 +13,11 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='ProductCategory',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=50, verbose_name='название')),
+                ('id', models.AutoField(
+                    auto_created=True,
+                    primary_key=True, serialize=False, verbose_name='ID')),
+                ('name', models.CharField(
+                    max_length=50, verbose_name='название')),
             ],
             options={
                 'verbose_name': 'категория',
@@ -25,6 +27,11 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='product',
             name='category',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='products', to='foodcartapp.ProductCategory', verbose_name='категория'),
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                related_name='products', to='foodcartapp.ProductCategory',
+                verbose_name='категория'),
         ),
     ]

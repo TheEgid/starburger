@@ -6,7 +6,6 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
         ('foodcartapp', '0015_auto_20200619_0935'),
@@ -16,6 +15,11 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='restaurant',
             name='new_admin',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='administrated_restaurants', to=settings.AUTH_USER_MODEL, verbose_name='администратор'),
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                related_name='administrated_restaurants',
+                to=settings.AUTH_USER_MODEL, verbose_name='администратор'),
         ),
     ]

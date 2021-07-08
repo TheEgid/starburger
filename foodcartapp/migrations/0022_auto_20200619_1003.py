@@ -13,6 +13,8 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='order',
             name='payment_type',
-            field=models.SmallIntegerField(choices=[(1, 'наличными после доставки')], db_index=True, default=1, verbose_name='тип заказа'),
+            field=models.SmallIntegerField(
+                choices=[(1, 'наличными после доставки')],
+                db_index=True, default=1, verbose_name='тип заказа'),
         ),
     ]

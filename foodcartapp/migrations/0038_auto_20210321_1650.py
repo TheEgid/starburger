@@ -16,12 +16,22 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Order',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('order_number', models.PositiveIntegerField(db_index=True, default=0)),
-                ('address', models.CharField(max_length=500, verbose_name='адрес')),
-                ('firstname', models.CharField(max_length=255, verbose_name='имя')),
-                ('lastname', models.CharField(blank=True, max_length=255, verbose_name='фамилия')),
-                ('phonenumber', phonenumber_field.modelfields.PhoneNumberField(db_index=True, max_length=128, region=None, verbose_name='мобильный номер')),
+                ('id', models.AutoField(auto_created=True,
+                                        primary_key=True,
+                                        serialize=False, verbose_name='ID')),
+                ('order_number',
+                 models.PositiveIntegerField(db_index=True, default=0)),
+                ('address',
+                 models.CharField(max_length=500, verbose_name='адрес')),
+                ('firstname',
+                 models.CharField(max_length=255, verbose_name='имя')),
+                ('lastname',
+                 models.CharField(blank=True, max_length=255,
+                                  verbose_name='фамилия')),
+                ('phonenumber',
+                 phonenumber_field.modelfields.PhoneNumberField(
+                     db_index=True, max_length=128,
+                     region=None, verbose_name='мобильный номер')),
             ],
             options={
                 'verbose_name': 'заказ',
@@ -31,20 +41,37 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='product',
             name='description',
-            field=models.TextField(blank=True, max_length=1000, verbose_name='описание'),
+            field=models.TextField(blank=True,
+                                   max_length=1000, verbose_name='описание'),
         ),
         migrations.AlterField(
             model_name='restaurant',
             name='contact_phone',
-            field=phonenumber_field.modelfields.PhoneNumberField(blank=True, max_length=128, region=None, verbose_name='контактный телефон'),
+            field=phonenumber_field.modelfields.PhoneNumberField(
+                blank=True, max_length=128,
+                region=None, verbose_name='контактный телефон'),
         ),
         migrations.CreateModel(
             name='OrderItem',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('quantity', models.IntegerField(validators=[django.core.validators.MinValueValidator(0), django.core.validators.MaxValueValidator(500)], verbose_name='количество')),
-                ('order', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='order_items', to='foodcartapp.order', verbose_name='Заказ')),
-                ('product', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='order_products', to='foodcartapp.product', verbose_name='продукт')),
+                ('id', models.AutoField(
+                    auto_created=True,
+                    primary_key=True,
+                    serialize=False,
+                    verbose_name='ID')),
+                ('quantity', models.IntegerField(
+                    validators=[django.core.validators.MinValueValidator(0),
+                                django.core.validators.MaxValueValidator(500)],
+                    verbose_name='количество')),
+                ('order', models.ForeignKey(
+                    on_delete=django.db.models.deletion.CASCADE,
+                    related_name='order_items',
+                    to='foodcartapp.order',
+                    verbose_name='Заказ')),
+                ('product', models.ForeignKey(
+                    on_delete=django.db.models.deletion.CASCADE,
+                    related_name='order_products', to='foodcartapp.product',
+                    verbose_name='продукт')),
             ],
             options={
                 'verbose_name': 'элемент заказа',

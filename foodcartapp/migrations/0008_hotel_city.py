@@ -14,6 +14,11 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='hotel',
             name='city',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='hotels', to='foodcartapp.City', verbose_name='город'),
+            field=models.ForeignKey(
+                blank=True, null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name='hotels',
+                to='foodcartapp.City',
+                verbose_name='город'),
         ),
     ]

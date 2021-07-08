@@ -13,7 +13,8 @@ class Migration(migrations.Migration):
     operations = [
         migrations.AlterModelOptions(
             name='restaurant',
-            options={'verbose_name': 'ресторан', 'verbose_name_plural': 'рестораны'},
+            options={'verbose_name': 'ресторан',
+                     'verbose_name_plural': 'рестораны'},
         ),
         migrations.RenameField(
             model_name='product',
@@ -28,6 +29,9 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='restaurant',
             name='city',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='restaurants', to='foodcartapp.City', verbose_name='город'),
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name='restaurants',
+                to='foodcartapp.City', verbose_name='город'),
         ),
     ]

@@ -14,11 +14,17 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='orderitem',
             name='order',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='items', to='foodcartapp.Order', verbose_name='заказ'),
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name='items',
+                to='foodcartapp.Order', verbose_name='заказ'),
         ),
         migrations.AlterField(
             model_name='orderitem',
             name='product',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='orders_items', to='foodcartapp.Product', verbose_name='товар'),
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name='orders_items',
+                to='foodcartapp.Product', verbose_name='товар'),
         ),
     ]

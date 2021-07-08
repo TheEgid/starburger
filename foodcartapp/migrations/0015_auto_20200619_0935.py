@@ -14,6 +14,11 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='restaurant',
             name='admin',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='administrated_restaurants', to='foodcartapp.Customer', verbose_name='администратор'),
+            field=models.ForeignKey(
+                blank=True, null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                related_name='administrated_restaurants',
+                to='foodcartapp.Customer',
+                verbose_name='администратор'),
         ),
     ]

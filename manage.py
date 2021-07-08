@@ -20,6 +20,6 @@ def main():
 if __name__ == '__main__':
     main()
 
-#parcel watch bundles-src/index.js -d bundles --public-url="./"
+# parcel watch bundles-src/index.js -d bundles --public-url="./"
 
-#npm install --include=dev
+# npm install --include=dev

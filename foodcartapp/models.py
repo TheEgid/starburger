@@ -92,7 +92,8 @@ class RestaurantMenuItem(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE,
                                 related_name='menu_items',
                                 verbose_name='продукт')
-    availability = models.BooleanField('в продаже', default=True, db_index=True)
+    availability = models.BooleanField('в продаже',
+                                       default=True, db_index=True)
 
     def __str__(self):
         return f"{self.restaurant.name} - {self.product.name}"
@@ -123,8 +124,6 @@ class OrderQuerySet(models.QuerySet):
 
 
 class Order(models.Model):
-    objects = OrderQuerySet.as_manager()
-
     class Statuses(models.TextChoices):
         UNTREATED = 'UN', _('Необработанный')
         CANCELED = 'CA', _('Отмененный')
@@ -155,6 +154,8 @@ class Order(models.Model):
                                      null=True)
     delivered_at = models.DateTimeField('дата и время доставки',
                                         blank=True, null=True)
+
+    objects = OrderQuerySet.as_manager()
 
     def __str__(self):
         return f'Заказ {self.firstname} {self.address} {self.phonenumber}'

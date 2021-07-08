@@ -6,7 +6,6 @@ import django.utils.timezone
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ('foodcartapp', '0039_remove_order_order_number'),
     ]
@@ -15,36 +14,58 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='order',
             name='called_at',
-            field=models.DateTimeField(blank=True, null=True, verbose_name='Дата и время созвона'),
+            field=models.DateTimeField(
+                blank=True, null=True,
+                verbose_name='Дата и время созвона'),
         ),
         migrations.AddField(
             model_name='order',
             name='comment',
-            field=models.TextField(blank=True, help_text='Необязательный комментарий к заказу', verbose_name='комментарий'),
+            field=models.TextField(
+                blank=True,
+                help_text='Необязательный комментарий к '
+                          'заказу',
+                verbose_name='комментарий'),
         ),
         migrations.AddField(
             model_name='order',
             name='delivered_at',
-            field=models.DateTimeField(blank=True, null=True, verbose_name='Дата и время доставки'),
+            field=models.DateTimeField(
+                blank=True, null=True, verbose_name='Дата и время доставки'),
         ),
         migrations.AddField(
             model_name='order',
             name='payment_method',
-            field=models.CharField(choices=[('NOCASH', 'Безналично'), ('CASH', 'Наличные')], default='NOCASH', max_length=6, verbose_name='способ оплаты'),
+            field=models.CharField(
+                choices=[('NOCASH', 'Безналично'), ('CASH', 'Наличные')],
+                default='NOCASH', max_length=6, verbose_name='способ оплаты'),
         ),
         migrations.AddField(
             model_name='order',
             name='registrated_at',
-            field=models.DateTimeField(blank=True, default=django.utils.timezone.now, null=True, verbose_name='Дата и время регистрации'),
+            field=models.DateTimeField(
+                blank=True, default=django.utils.timezone.now,
+                null=True, verbose_name='Дата и время регистрации'),
         ),
         migrations.AddField(
             model_name='order',
             name='status',
-            field=models.CharField(choices=[('UN', 'Необработанный'), ('CA', 'Отмененный'), ('AC', 'Принятый'), ('PR', 'Приготовленный'), ('SH', 'Отгруженный'), ('CO', 'Выполненный')], default='UN', max_length=2, verbose_name='статус'),
+            field=models.CharField(
+                choices=[('UN', 'Необработанный'),
+                         ('CA', 'Отмененный'),
+                         ('AC', 'Принятый'),
+                         ('PR', 'Приготовленный'),
+                         ('SH', 'Отгруженный'),
+                         ('CO', 'Выполненный')],
+                default='UN', max_length=2, verbose_name='статус'),
         ),
         migrations.AddField(
             model_name='orderitem',
             name='value',
-            field=models.DecimalField(decimal_places=2, default=0, max_digits=8, validators=[django.core.validators.MinValueValidator(0)], verbose_name='стоимость'),
+            field=models.DecimalField(
+                decimal_places=2, default=0,
+                max_digits=8,
+                validators=[django.core.validators.MinValueValidator(0)],
+                verbose_name='стоимость'),
         ),
     ]

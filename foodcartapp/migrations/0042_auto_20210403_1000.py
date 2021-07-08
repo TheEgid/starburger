@@ -14,16 +14,21 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='order',
             name='called_at',
-            field=models.DateTimeField(blank=True, null=True, verbose_name='дата и время созвона'),
+            field=models.DateTimeField(blank=True, null=True,
+                                       verbose_name='дата и время созвона'),
         ),
         migrations.AlterField(
             model_name='order',
             name='delivered_at',
-            field=models.DateTimeField(blank=True, null=True, verbose_name='дата и время доставки'),
+            field=models.DateTimeField(blank=True, null=True,
+                                       verbose_name='дата и время доставки'),
         ),
         migrations.AlterField(
             model_name='order',
             name='registrated_at',
-            field=models.DateTimeField(blank=True, default=django.utils.timezone.now, null=True, verbose_name='дата и время регистрации'),
+            field=models.DateTimeField(blank=True,
+                                       default=django.utils.timezone.now,
+                                       null=True, verbose_name='дата и время '
+                                                               'регистрации'),
         ),
     ]

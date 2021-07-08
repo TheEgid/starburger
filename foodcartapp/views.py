@@ -5,7 +5,7 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from .models import Product, Order, OrderItem
-from .serializers import OrderSerializer, ProductSerializer
+from .serializers import OrderSerializer
 from rest_framework.serializers import ValidationError
 
 
@@ -79,7 +79,8 @@ def register_order(request):
                                      phonenumber=new_order['phonenumber'])
 
         for new_order_item in new_order['products']:
-            value = new_order_item['product'].price * new_order_item['quantity']
+            value = new_order_item['product'].price * \
+                    new_order_item['quantity']
             OrderItem.objects.create(product=new_order_item['product'],
                                      quantity=new_order_item['quantity'],
                                      value=value,

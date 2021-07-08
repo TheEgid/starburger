@@ -14,6 +14,9 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='product',
             name='price',
-            field=models.DecimalField(decimal_places=2, max_digits=8, validators=[django.core.validators.MinValueValidator(0)], verbose_name='цена'),
+            field=models.DecimalField(
+                decimal_places=2, max_digits=8,
+                validators=[django.core.validators.MinValueValidator(0)],
+                verbose_name='цена'),
         ),
     ]

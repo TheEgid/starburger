@@ -13,11 +13,14 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='restaurant',
             name='address',
-            field=models.CharField(blank=True, max_length=100, verbose_name='адрес'),
+            field=models.CharField(blank=True,
+                                   max_length=100, verbose_name='адрес'),
         ),
         migrations.AddField(
             model_name='restaurant',
             name='contact_phone',
-            field=models.CharField(blank=True, max_length=50, verbose_name='контактный телефон'),
+            field=models.CharField(blank=True,
+                                   max_length=50,
+                                   verbose_name='контактный телефон'),
         ),
     ]

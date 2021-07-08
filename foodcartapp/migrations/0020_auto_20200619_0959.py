@@ -13,6 +13,10 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='order',
             name='status',
-            field=models.SmallIntegerField(choices=[(1, 'новый'), (2, 'подтверждён'), (3, 'готовится'), (4, 'в пути'), (5, 'доставлен'), (6, 'отменён')], db_index=True, default=1, verbose_name='статус'),
+            field=models.SmallIntegerField(
+                choices=[(1, 'новый'), (2, 'подтверждён'),
+                         (3, 'готовится'), (4, 'в пути'),
+                         (5, 'доставлен'), (6, 'отменён')],
+                db_index=True, default=1, verbose_name='статус'),
         ),
     ]

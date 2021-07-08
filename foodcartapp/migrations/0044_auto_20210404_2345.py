@@ -5,7 +5,6 @@ import django.utils.timezone
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ('foodcartapp', '0043_addresspoint'),
     ]
@@ -14,21 +13,29 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='addresspoint',
             name='query_at',
-            field=models.DateTimeField(blank=True, default=django.utils.timezone.now, null=True, verbose_name='дата и время регистрации'),
+            field=models.DateTimeField(
+                blank=True,
+                default=django.utils.timezone.now, null=True,
+                verbose_name='дата и время регистрации'),
         ),
         migrations.AlterField(
             model_name='addresspoint',
             name='address',
-            field=models.CharField(db_index=True, max_length=500, unique=True, verbose_name='адрес'),
+            field=models.CharField(db_index=True,
+                                   max_length=500,
+                                   unique=True,
+                                   verbose_name='адрес'),
         ),
         migrations.AlterField(
             model_name='product',
             name='name',
-            field=models.CharField(db_index=True, max_length=50, verbose_name='название'),
+            field=models.CharField(db_index=True,
+                                   max_length=50, verbose_name='название'),
         ),
         migrations.AlterField(
             model_name='restaurant',
             name='name',
-            field=models.CharField(db_index=True, max_length=50, verbose_name='название'),
+            field=models.CharField(db_index=True,
+                                   max_length=50, verbose_name='название'),
         ),
     ]

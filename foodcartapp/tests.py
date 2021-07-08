@@ -1,7 +1,7 @@
 from rest_framework import status
 from django.test.client import Client
 from django.test import TestCase
-from .models import Product, ProductCategory, Order, OrderItem
+from .models import Product, ProductCategory
 import json
 
 
@@ -20,7 +20,8 @@ class ApiTestCase(TestCase):
          "address": "4"},
         # // Продукты — пустой список:
         {"products": [], "firstname": "some", "lastname": "some",
-         "phonenumber": "+7 967 466 2380", "address": "Дом на Курской площади"},
+         "phonenumber": "+7 967 466 2380",
+         "address": "Дом на Курской площади"},
         # // Продуктов нет:
         {"firstname": "1", "lastname": "2", "phonenumber": "3", "address": "4"}
     ]
