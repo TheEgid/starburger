@@ -146,8 +146,7 @@ class Order(models.Model):
     comment = models.TextField("комментарий", blank=True,
                                help_text='Необязательный комментарий к заказу')
     registrated_at = models.DateTimeField('дата и время регистрации',
-                                          default=timezone.now, blank=True,
-                                          null=True)
+                                          default=timezone.now)
     called_at = models.DateTimeField('дата и время созвона', blank=True,
                                      null=True)
     delivered_at = models.DateTimeField('дата и время доставки',
