@@ -18,8 +18,7 @@ class AddressPoint(models.Model):
                                     max_digits=9, decimal_places=6, null=True,
                                     blank=True)
     registered_at = models.DateTimeField('дата и время регистрации',
-                                         default=timezone.now, blank=True,
-                                         null=True)
+                                         default=timezone.now)
 
 
 class Restaurant(models.Model):
@@ -60,10 +59,9 @@ class Product(models.Model):
     price = models.DecimalField('цена', max_digits=8, decimal_places=2,
                                 validators=[MinValueValidator(0)])
     image = models.ImageField('картинка')
-    special_status = models.BooleanField('спец.предложение', default=False,
-                                         db_index=True)
+    special_status = models.BooleanField('спец.предложение',
+                                         default=False, db_index=True)
     description = models.TextField('описание', max_length=1000, blank=True)
-
     objects = ProductQuerySet.as_manager()
 
     def __str__(self):
@@ -96,7 +94,7 @@ class RestaurantMenuItem(models.Model):
                                        default=True, db_index=True)
 
     def __str__(self):
-        return f"{self.restaurant.name} - {self.product.name}"
+        return f'{self.restaurant.name} - {self.product.name}'
 
     class Meta:
         verbose_name = 'пункт меню ресторана'
@@ -140,7 +138,7 @@ class Order(models.Model):
                               default=Statuses.UNTREATED)
     payment_method = models.CharField('способ оплаты', max_length=6,
                                       choices=PaymentMethods.choices,
-                                      default=PaymentMethods.NOCASH)
+                                      default=PaymentMethods.CASH)
     address = models.CharField('адрес', max_length=500)
     firstname = models.CharField('имя', max_length=255)
     lastname = models.CharField('фамилия', max_length=255, blank=True)
@@ -168,17 +166,16 @@ class Order(models.Model):
 class OrderItem(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE,
                               related_name='order_items',
-                              verbose_name='Заказ')
+                              verbose_name='заказ')
     product = models.ForeignKey(Product, on_delete=models.CASCADE,
                                 related_name='order_products',
                                 verbose_name='продукт')
-
     quantity = models.IntegerField(validators=[MinValueValidator(0),
                                                MaxValueValidator(500)],
                                    verbose_name='количество')
-    value = models.DecimalField(decimal_places=2, default=0,
-                                verbose_name='стоимость', max_digits=8,
-                                validators=[MinValueValidator(0)])
+    value = models.DecimalField(decimal_places=2, max_digits=8,
+                                validators=[MinValueValidator(0)],
+                                verbose_name='стоимость')
 
     def __str__(self):
         return f'{self.product} {self.quantity}'
